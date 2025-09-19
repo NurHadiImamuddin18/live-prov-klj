@@ -49,9 +49,9 @@ except Exception as e:
 load_dotenv()
 
 TOKEN = os.getenv("TOKEN")
-DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_HOST = os.getenv("DB_HOST", "interchange.proxy.rlwy.net")
 DB_USER = os.getenv("DB_USER", "root")
-DB_PASS = os.getenv("DB_PASS", "")
+DB_PASS = os.getenv("DB_PASS", "aTrwXgpfiTCWXluAEEwdYXDdmveoQoDA")
 DB_NAME = os.getenv("DB_NAME", "telegram_files")
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "uploads")
 
