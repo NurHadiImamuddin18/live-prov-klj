@@ -14,7 +14,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Baca env variable
+load_dotenv() # Baca env variable
 creds_json = os.getenv("GOOGLE_CREDS_JSON")
 if not creds_json:
     raise ValueError("Environment variable GOOGLE_CREDS_JSON belum diset!")
