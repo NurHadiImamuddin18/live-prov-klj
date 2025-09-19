@@ -29,6 +29,7 @@ print("===============================")
 
 # Parse ke dictionary langsung (tidak replace apapun)
 creds_dict = json.loads(creds_json)
+creds_dict["private_key"] = creds_dict["private_key"].replace("\\n", "\n")
 
 # Buat credentials
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
