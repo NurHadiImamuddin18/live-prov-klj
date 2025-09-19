@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import telebot
 import pymysql
 import gspread
+import json
 from google.oauth2.service_account import Credentials
 # setup logging
 import logging
@@ -13,14 +14,24 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Setup Google Sheets
-SHEET_JSON = os.getenv("GOOGLE_SHEET_JSON", "long-province-472605-s3-f836d497df04.json")
-SHEET_NAME = os.getenv("SHEET_NAME", "telkmklj")
+# load env variable (jika pakai dotenv)
+from dotenv import load_dotenv
+load_dotenv()
 
+# Baca JSON dari env
+creds_json = os.getenv("GOOGLE_CREDS_JSON")
+if not creds_json:
+    raise ValueError("Environment variable GOOGLE_CREDS_JSON belum diset!")
+
+creds_dict = json.loads(creds_json)
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
-creds = Credentials.from_service_account_file(SHEET_JSON, scopes=SCOPES)
+
+# Buat credentials dan authorize gspread
+creds = Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
 gc = gspread.authorize(creds)
 
+# Buka sheet
+SHEET_NAME = os.getenv("SHEET_NAME", "telkmklj")
 try:
     sh = gc.open_by_key("1-pclr-o0mbvyH8XFtOlmScgeEtTnQyq4S8wdbX6XmgI")
     worksheet = sh.sheet1
@@ -28,6 +39,7 @@ except Exception as e:
     logger.exception("Gagal membuka Google Sheet")
     worksheet = None
 
+logger.info("Google Sheet siap!")
 
 # load env
 load_dotenv()
