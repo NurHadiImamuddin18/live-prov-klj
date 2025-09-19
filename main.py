@@ -10,6 +10,7 @@ from google.oauth2.service_account import Credentials
 # setup logging
 import logging
 import json
+from google.oauth2.service_account import Credentials
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -19,7 +20,9 @@ SHEET_JSON = os.getenv("GOOGLE_SHEET_JSON", "long-province-472605-s3-f836d497df0
 SHEET_NAME = os.getenv("SHEET_NAME", "telkmklj")
 
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
-google_creds = json.loads(os.getenv("GOOGLE_CREDENTIALS"))
+google_creds = json.loads(os.getenv("GOOGLE_CREDS"))
+google_creds["private_key"] = google_creds["private_key"].replace("\\n", "\n")
+
 creds = Credentials.from_service_account_info(google_creds, scopes=SCOPES)
 gc = gspread.authorize(creds)
 
