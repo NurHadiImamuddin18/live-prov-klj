@@ -49,10 +49,10 @@ except Exception as e:
 load_dotenv()
 
 TOKEN = os.getenv("TOKEN")
-DB_HOST = os.getenv("DB_HOST", "interchange.proxy.rlwy.net")
-DB_USER = os.getenv("DB_USER", "root")
-DB_PASS = os.getenv("DB_PASS", "aTrwXgpfiTCWXluAEEwdYXDdmveoQoDA")
-DB_NAME = os.getenv("DB_NAME", "telegram_files")
+DB_HOST = os.getenv("MYSQLHOST", "mysql.railway.internal")
+DB_USER = os.getenv("MYSQLUSER", "root")
+DB_PASS = os.getenv("MYSQLPASSWORD", "aTrwXgpfiTCWXluAEEwdYXDdmveoQoDA")
+DB_NAME = os.getenv("MYSQLDATABASE", "telegram_files")
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "uploads")
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
