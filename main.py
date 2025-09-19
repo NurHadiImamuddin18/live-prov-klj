@@ -19,6 +19,9 @@ creds_json = os.getenv("GOOGLE_CREDS_JSON")
 if not creds_json:
     raise ValueError("Environment variable GOOGLE_CREDS_JSON belum diset!")
 
+with open("long-province-472605-s3-f836d497df04.json", "r") as f:
+    data = f.read()
+    print(data.replace("\n", "\\n"))
 # Convert JSON string menjadi dictionary
 creds_dict = json.loads(creds_json)
 
