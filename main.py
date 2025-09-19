@@ -28,7 +28,7 @@ print(creds_json[:200])  # tampilkan sebagian isi
 print("===============================")
 
 # Pastikan private_key dalam format benar
-creds_json = creds_json.replace("\\n", "\n")
+creds_json = creds_json.replace("\n", "\\n")
 
 # Parse ke dictionary
 creds_dict = json.loads(creds_json)
