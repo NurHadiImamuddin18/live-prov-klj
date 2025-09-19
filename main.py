@@ -22,15 +22,12 @@ creds_json = os.getenv("GOOGLE_CREDS_JSON")
 if not creds_json:
     raise ValueError("Environment variable GOOGLE_CREDS_JSON belum diset!")
 
-# Debug awal
+# Debug awal (cek 200 karakter pertama)
 print("==== DEBUG GOOGLE_CREDS_JSON ====")
-print(creds_json[:200])  # tampilkan sebagian isi
+print(repr(creds_json))
 print("===============================")
 
-# Pastikan private_key dalam format benar
-creds_json = creds_json.replace("\n", "\\n")
-
-# Parse ke dictionary
+# Parse ke dictionary langsung (tidak replace apapun)
 creds_dict = json.loads(creds_json)
 
 # Buat credentials
@@ -42,10 +39,12 @@ gc = gspread.authorize(creds)
 try:
     sh = gc.open_by_key("1-pclr-o0mbvyH8XFtOlmScgeEtTnQyq4S8wdbX6XmgI")
     worksheet = sh.sheet1
+    logger.info("Google Sheet siap!")
 except Exception as e:
     logger.exception("Gagal membuka Google Sheet")
     worksheet = None
-# load env
+
+    # load env
 load_dotenv()
 
 TOKEN = os.getenv("TOKEN")
