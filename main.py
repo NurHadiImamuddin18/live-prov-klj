@@ -19,11 +19,20 @@ logger = logging.getLogger(__name__)
 SHEET_NAME = os.getenv("SHEET_NAME", "telkmklj")
 
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
+
+# Ambil credential dari environment
 google_creds = json.loads(os.getenv("GOOGLE_CREDS"))
 google_creds["private_key"] = google_creds["private_key"].replace("\\n", "\n")
 
+# Buat credential object
 creds = Credentials.from_service_account_info(google_creds, scopes=SCOPES)
+
+# Authorize ke gspread
 gc = gspread.authorize(creds)
+
+# Contoh buka sheet
+sh = gc.open(SHEET_NAME)
+worksheet = sh.sheet1
 
 try:
     sh = gc.open_by_key("1-pclr-o0mbvyH8XFtOlmScgeEtTnQyq4S8wdbX6XmgI")
