@@ -14,17 +14,26 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-load_dotenv() # Baca env variable
+# Load .env
+load_dotenv()
+
+# Ambil GOOGLE_CREDS_JSON
 creds_json = os.getenv("GOOGLE_CREDS_JSON")
 if not creds_json:
     raise ValueError("Environment variable GOOGLE_CREDS_JSON belum diset!")
 
-with open("long-province-472605-s3-f836d497df04.json", "r") as f:
-    data = f.read()
-    print(data.replace("\n", "\\n"))
-# Convert JSON string menjadi dictionary
+# Debug awal
+print("==== DEBUG GOOGLE_CREDS_JSON ====")
+print(creds_json[:200])  # tampilkan sebagian isi
+print("===============================")
+
+# Pastikan private_key dalam format benar
+creds_json = creds_json.replace("\\n", "\n")
+
+# Parse ke dictionary
 creds_dict = json.loads(creds_json)
 
+# Buat credentials
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 creds = Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
 gc = gspread.authorize(creds)
@@ -36,8 +45,6 @@ try:
 except Exception as e:
     logger.exception("Gagal membuka Google Sheet")
     worksheet = None
-
-logger.info("Google Sheet siap!")
 # load env
 load_dotenv()
 
