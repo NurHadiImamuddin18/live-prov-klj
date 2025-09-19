@@ -9,30 +9,17 @@ import gspread
 from google.oauth2.service_account import Credentials
 # setup logging
 import logging
-import json
-from google.oauth2.service_account import Credentials
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Setup Google Sheets
+SHEET_JSON = os.getenv("GOOGLE_SHEET_JSON", "long-province-472605-s3-f836d497df04.json")
 SHEET_NAME = os.getenv("SHEET_NAME", "telkmklj")
 
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
-
-# Ambil credential dari environment
-google_creds = json.loads(os.getenv("GOOGLE_CREDS"))
-google_creds["private_key"] = google_creds["private_key"].replace("\\n", "\n")
-
-# Buat credential object
-creds = Credentials.from_service_account_info(google_creds, scopes=SCOPES)
-
-# Authorize ke gspread
+creds = Credentials.from_service_account_file(SHEET_JSON, scopes=SCOPES)
 gc = gspread.authorize(creds)
-
-# Contoh buka sheet
-sh = gc.open(SHEET_NAME)
-worksheet = sh.sheet1
 
 try:
     sh = gc.open_by_key("1-pclr-o0mbvyH8XFtOlmScgeEtTnQyq4S8wdbX6XmgI")
