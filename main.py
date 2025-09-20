@@ -48,8 +48,6 @@ except Exception as e:
     # load env
 load_dotenv()
 
-conn = get_db_conn()
-cursor = conn.cursor()
 
 TOKEN = os.getenv("TOKEN")
 DB_HOST = os.getenv("MYSQLHOST")
@@ -66,6 +64,9 @@ def get_db_conn():
         port=int(os.getenv("MYSQLPORT", 3306)),  # Railway kasih custom port
         autocommit=True
     )
+
+conn = get_db_conn()
+cursor = conn.cursor()
 
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "uploads")
 
