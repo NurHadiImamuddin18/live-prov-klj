@@ -337,7 +337,7 @@ def handle_document(msg):
         }
         save_file_metadata(meta)
 
-        bot.reply_to(msg, f"Dokumen berhasil disimpan ✅")
+        bot.reply_to(msg, f"✅📄 Dokumen berhasil disimpan")
 
     except Exception as e:
         logger.exception("Error saat menerima dokumen")
