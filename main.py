@@ -306,8 +306,6 @@ def send_order_to_sheet(data):
         logger.exception("Gagal mengirim order ke Google Sheets")
 
 
-
-# Handler: menerima document (hanya dokumen pdf/docx/xls/xlsx)
 @bot.message_handler(content_types=["document"])
 def handle_document(msg):
     doc = msg.document
@@ -317,23 +315,33 @@ def handle_document(msg):
     # Filter hanya dokumen yang diijinkan
     ext = original_name.split(".")[-1].lower()
     if ext not in ["pdf", "doc", "docx", "xls", "xlsx"]:
-        return  # langsung keluar tanpa pesan
+        return  # keluar tanpa respon
 
     try:
         # Ambil file dari Telegram
         file_info = bot.get_file(file_id)
         downloaded = bot.download_file(file_info.file_path)
 
-        # Simpan dengan nama asli
+        # Simpan lokal
         stored_path = os.path.join(UPLOAD_DIR, original_name)
         with open(stored_path, "wb") as f:
             f.write(downloaded)
 
-        # Simpan metadata ke DB
+        # Cek apakah pesan dari grup atau private
+        uploader_username = getattr(msg.from_user, "username", None)
+        chat_type = msg.chat.type  # "private", "group", "supergroup"
+        chat_title = msg.chat.title if chat_type in ["group", "supergroup"] else None
+
+        # Simpan metadata
         meta = {
             "telegram_file_id": file_id,
             "original_filename": original_name,
-            "uploader_username": getattr(msg.from_user, "username", None),
+            "uploader_username": uploader_username,
+            "uploader_first_name": msg.from_user.first_name,
+            "uploader_last_name": msg.from_user.last_name,
+            "chat_type": chat_type,
+            "chat_title": chat_title,
+            "chat_id": msg.chat.id,
         }
         save_file_metadata(meta)
 
@@ -342,6 +350,7 @@ def handle_document(msg):
     except Exception as e:
         logger.exception("Error saat menerima dokumen")
         bot.reply_to(msg, "❌ Terjadi kesalahan saat menyimpan dokumen.")
+
 
 @bot.message_handler(content_types=["photo"])
 def handle_photo(msg):
