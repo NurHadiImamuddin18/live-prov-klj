@@ -10,8 +10,6 @@ import json
 from google.oauth2.service_account import Credentials
 # setup logging
 
-
-
 def get_db_conn():
     return pymysql.connect(
         host=os.getenv("MYSQLHOST"),
@@ -309,26 +307,26 @@ def send_order_to_sheet(data):
 
 
 
-# Handler: menerima document (file seperti pdf/docx)
-# Handler: menerima document (file seperti pdf/docx/xlsx)
+# Handler: menerima document (hanya dokumen pdf/docx/xls/xlsx)
 @bot.message_handler(content_types=["document"])
 def handle_document(msg):
     doc = msg.document
     file_id = doc.file_id
     original_name = doc.file_name or "unknown"
-    mime_type = doc.mime_type or ""
-    file_size = doc.file_size or 0
-    caption = msg.caption or ""
+
+    # Filter hanya dokumen yang diijinkan
+    ext = original_name.split(".")[-1].lower()
+    if ext not in ["pdf", "doc", "docx", "xls", "xlsx"]:
+        bot.reply_to(msg, "❌ Hanya file dokumen (pdf/doc/docx/xls/xlsx) yang diperbolehkan.")
+        return
 
     try:
         # Ambil file dari Telegram
         file_info = bot.get_file(file_id)
         downloaded = bot.download_file(file_info.file_path)
 
-        # Simpan dengan nama asli persis
-        stored_filename = original_name
-        stored_path = os.path.join(UPLOAD_DIR, stored_filename)
-
+        # Simpan dengan nama asli
+        stored_path = os.path.join(UPLOAD_DIR, original_name)
         with open(stored_path, "wb") as f:
             f.write(downloaded)
 
@@ -340,24 +338,11 @@ def handle_document(msg):
         }
         save_file_metadata(meta)
 
-        # Bedakan pesan berdasarkan ekstensi
-        ext = original_name.split(".")[-1].lower()
-        if ext in ["pdf", "doc", "docx", "xls", "xlsx"]:
-            jenis = "Dokumen"
-        elif ext in ["jpg", "jpeg", "png"]:
-            jenis = "Gambar"
-        else:
-            jenis = "File"
+        bot.reply_to(msg, f"Dokumen berhasil disimpan ✅")
 
-        bot.reply_to(
-            msg,
-            f"{jenis} berhasil disimpan ✅\n"
-            # f"Nama asli: `{original_name}`\n"
-            # f"Disimpan sebagai: "
-        )
     except Exception as e:
-        logger.exception("Error saat menerima document")
-        bot.reply_to(msg, "Maaf, terjadi kesalahan saat menyimpan file.")
+        logger.exception("Error saat menerima dokumen")
+        bot.reply_to(msg, "❌ Terjadi kesalahan saat menyimpan dokumen.")
 
 @bot.message_handler(content_types=["photo"])
 def handle_photo(msg):
