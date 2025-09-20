@@ -317,8 +317,7 @@ def handle_document(msg):
     # Filter hanya dokumen yang diijinkan
     ext = original_name.split(".")[-1].lower()
     if ext not in ["pdf", "doc", "docx", "xls", "xlsx"]:
-        bot.reply_to(msg, "❌ Hanya file dokumen (pdf/doc/docx/xls/xlsx) yang diperbolehkan.")
-        return
+        return  # langsung keluar tanpa pesan
 
     try:
         # Ambil file dari Telegram
