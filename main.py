@@ -9,6 +9,23 @@ import gspread
 import json
 from google.oauth2.service_account import Credentials
 # setup logging
+
+
+
+def get_db_conn():
+    return pymysql.connect(
+        host=os.getenv("MYSQLHOST"),
+        user=os.getenv("MYSQLUSER"),
+        password=os.getenv("MYSQLPASSWORD"),
+        database=os.getenv("MYSQLDATABASE"),
+        port=int(os.getenv("MYSQLPORT", 12036)),
+        autocommit=True
+    )
+
+
+conn = get_db_conn()
+cursor = conn.cursor()
+
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -52,20 +69,6 @@ load_dotenv()
 TOKEN = os.getenv("TOKEN")
 
 
-def get_db_conn():
-    return pymysql.connect(
-        host=os.getenv("MYSQLHOST"),
-        user=os.getenv("MYSQLUSER"),
-        password=os.getenv("MYSQLPASSWORD"),
-        database=os.getenv("MYSQLDATABASE"),
-        port=int(os.getenv("MYSQLPORT", 12036)),
-        autocommit=True
-    )
-
-
-conn = get_db_conn()
-cursor = conn.cursor()
-
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "uploads")
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -81,10 +84,11 @@ bot = telebot.TeleBot(TOKEN, parse_mode=None)
 # DB helper
 def get_db_conn():
     return pymysql.connect(
-        host=DB_HOST,
-        user=DB_USER,
-        password=DB_PASS,
-        database=DB_NAME,
+        host=os.getenv("MYSQLHOST"),
+        user=os.getenv("MYSQLUSER"),
+        password=os.getenv("MYSQLPASSWORD"),
+        database=os.getenv("MYSQLDATABASE"),
+        port=int(os.getenv("MYSQLPORT", 3306)),
         charset="utf8mb4",
         cursorclass=pymysql.cursors.DictCursor,
         autocommit=True
