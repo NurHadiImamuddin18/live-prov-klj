@@ -57,9 +57,10 @@ def get_db_conn():
         user=os.getenv("MYSQLUSER"),
         password=os.getenv("MYSQLPASSWORD"),
         database=os.getenv("MYSQLDATABASE"),
-        port=int(os.getenv("MYSQLPORT", 3306)),  # Railway kasih custom port
+        port=int(os.getenv("MYSQLPORT", 3306)),
         autocommit=True
     )
+
 
 conn = get_db_conn()
 cursor = conn.cursor()
