@@ -51,13 +51,14 @@ load_dotenv()
 
 TOKEN = os.getenv("TOKEN")
 
+
 def get_db_conn():
     return pymysql.connect(
         host=os.getenv("MYSQLHOST"),
         user=os.getenv("MYSQLUSER"),
         password=os.getenv("MYSQLPASSWORD"),
         database=os.getenv("MYSQLDATABASE"),
-        port=int(os.getenv("MYSQLPORT", 3306)),
+        port=int(os.getenv("MYSQLPORT", 12036)),
         autocommit=True
     )
 
