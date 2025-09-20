@@ -49,7 +49,7 @@ except Exception as e:
 load_dotenv()
 
 TOKEN = os.getenv("TOKEN")
-DB_HOST = os.getenv("MYSQLHOST", "mysql.railway.internal")
+DB_HOST = os.getenv("MYSQLHOST", "interchange.proxy.rlwy.net")
 DB_USER = os.getenv("MYSQLUSER", "root")
 DB_PASS = os.getenv("MYSQLPASSWORD", "aTrwXgpfiTCWXluAEEwdYXDdmveoQoDA")
 DB_NAME = os.getenv("MYSQLDATABASE", "telegram_files")
