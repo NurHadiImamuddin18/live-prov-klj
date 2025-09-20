@@ -48,11 +48,25 @@ except Exception as e:
     # load env
 load_dotenv()
 
+conn = get_db_conn()
+cursor = conn.cursor()
+
 TOKEN = os.getenv("TOKEN")
-DB_HOST = os.getenv("MYSQLHOST", "interchange.proxy.rlwy.net")
-DB_USER = os.getenv("MYSQLUSER", "root")
-DB_PASS = os.getenv("MYSQLPASSWORD", "aTrwXgpfiTCWXluAEEwdYXDdmveoQoDA")
-DB_NAME = os.getenv("MYSQLDATABASE", "telegram_files")
+DB_HOST = os.getenv("MYSQLHOST")
+DB_USER = os.getenv("MYSQLUSER")
+DB_PASS = os.getenv("MYSQLPASSWORD")
+DB_NAME = os.getenv("MYSQLDATABASE")
+DB_PORT = int(os.getenv("MYSQLPORT", 3306))
+def get_db_conn():
+    return pymysql.connect(
+        host=os.getenv("MYSQLHOST"),
+        user=os.getenv("MYSQLUSER"),
+        password=os.getenv("MYSQLPASSWORD"),
+        database=os.getenv("MYSQLDATABASE"),
+        port=int(os.getenv("MYSQLPORT", 3306)),  # Railway kasih custom port
+        autocommit=True
+    )
+
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "uploads")
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
