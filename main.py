@@ -55,7 +55,7 @@ creds_dict = json.loads(creds_json)
 creds_dict["private_key"] = creds_dict["private_key"].replace("\\n", "\n")
 
 # Buat credentials
-SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive.file"]
+SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
 creds = Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
 gc = gspread.authorize(creds)
 
@@ -318,6 +318,7 @@ def send_order_to_sheet(data):
 # ID folder tujuan di Google Drive
 FOLDER_ID = "1CtHNq2y05FxB-qSn-2NY0Doxn7I7wXm0"
 
+
    # ganti sesuai folder Drive kamu
 
 def upload_to_drive(file_path, file_name, folder_id=None):
@@ -334,10 +335,12 @@ def upload_to_drive(file_path, file_name, folder_id=None):
     uploaded_file = service.files().create(
         body=file_metadata,
         media_body=media,
-        fields="id, webViewLink"
+        fields="id, webViewLink",
+        supportsAllDrives=True   # 🔑 ini penting kalau folder shared atau kampus
     ).execute()
 
     return uploaded_file["id"], uploaded_file["webViewLink"]
+
 
 @bot.message_handler(content_types=["document"])
 def handle_document(msg):
