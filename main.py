@@ -336,7 +336,7 @@ def upload_to_drive(file_path, file_name, folder_id=None):
         body=file_metadata,
         media_body=media,
         fields="id, webViewLink",
-        supportsAllDrives=True   # 🔑 ini penting kalau folder shared atau kampus
+        supportsAllDrives=True  # <-- ini sudah benar
     ).execute()
 
     return uploaded_file["id"], uploaded_file["webViewLink"]
