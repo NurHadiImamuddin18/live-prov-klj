@@ -10,6 +10,7 @@ import json
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
+
 # setup logging
 
 def get_db_conn():
@@ -331,7 +332,26 @@ def send_order_to_sheet(data):
                 return None, None
 
 # ID folder tujuan di Google Drive
-FOLDER_ID = "1iOU8XkjxM-1jceBHBldey-jMGvPB-CoY?usp=drive_link"   # ganti sesuai folder Drive kamu
+FOLDER_ID = "1iOU8XkjxM-1jceBHBldey-jMGvPB-CoY"   # ganti sesuai folder Drive kamu
+
+def upload_to_drive(file_path, file_name, folder_id=None):
+    """Upload file ke Google Drive, return (file_id, webViewLink)."""
+    creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    service = build("drive", "v3", credentials=creds)
+
+    file_metadata = {"name": file_name}
+    if folder_id:
+        file_metadata["parents"] = [folder_id]
+
+    media = MediaFileUpload(file_path, resumable=True)
+
+    uploaded_file = service.files().create(
+        body=file_metadata,
+        media_body=media,
+        fields="id, webViewLink"
+    ).execute()
+
+    return uploaded_file["id"], uploaded_file["webViewLink"]
 
 @bot.message_handler(content_types=["document"])
 def handle_document(msg):
