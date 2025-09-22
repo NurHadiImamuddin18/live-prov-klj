@@ -331,7 +331,6 @@ def upload_to_drive(file_path, file_name, folder_id=None):
             fileId=folder_id,
             fields="id, name",
             supportsAllDrives=True,
-            includeItemsFromAllDrives=True
         ).execute()
         print(f"✅ Folder ditemukan: {folder['name']} (ID: {folder['id']})")
     except Exception as e:
