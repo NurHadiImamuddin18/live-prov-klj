@@ -8,13 +8,7 @@ import pymysql
 import gspread
 import json
 from google.oauth2.service_account import Credentials
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
-
 # setup logging
-
-creds_json = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-creds_dict = json.loads(creds_json)  # parse isi JSON
 
 def get_db_conn():
     return pymysql.connect(
@@ -53,7 +47,7 @@ creds_dict = json.loads(creds_json)
 creds_dict["private_key"] = creds_dict["private_key"].replace("\\n", "\n")
 
 # Buat credentials
-SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 creds = Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
 gc = gspread.authorize(creds)
 
@@ -312,50 +306,6 @@ def send_order_to_sheet(data):
         logger.exception("Gagal mengirim order ke Google Sheets")
 
 
-
-# ID folder tujuan di Google Drive
-FOLDER_ID = "1CtHNq2y05FxB-qSn-2NY0Doxn7I7wXm0"
-
-   # ganti sesuai folder Drive kamu
-
-def upload_to_drive(file_path, file_name, folder_id=None):
-    """Upload file ke Google Drive, return (file_id, webViewLink)."""
-    creds = Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
-    service = build("drive", "v3", credentials=creds)
-
-    print(f"DEBUG: Upload file '{file_name}' ke folder {folder_id}")
-
-    # ✅ cek folder dengan supportsAllDrives
-    try:
-        folder = service.files().get(
-            fileId=folder_id,
-            fields="id, name",
-            supportsAllDrives=True,
-        ).execute()
-        print(f"✅ Folder ditemukan: {folder['name']} (ID: {folder['id']})")
-    except Exception as e:
-        print("❌ ERROR: Folder tidak ditemukan atau tidak bisa diakses")
-        raise
-
-    file_metadata = {
-        "name": file_name,
-        "parents": [folder_id] if folder_id else []
-    }
-
-    media = MediaFileUpload(file_path, resumable=True)
-
-    uploaded_file = service.files().create(
-        body=file_metadata,
-        media_body=media,
-        fields="id, webViewLink",
-        supportsAllDrives=True,
-    ).execute()
-
-    return uploaded_file["id"], uploaded_file["webViewLink"]
-
-
-
-
 @bot.message_handler(content_types=["document"])
 def handle_document(msg):
     doc = msg.document
@@ -377,11 +327,6 @@ def handle_document(msg):
         with open(stored_path, "wb") as f:
             f.write(downloaded)
 
-        # Upload ke Google Drive
-        drive_file_id, drive_link = upload_to_drive(
-            stored_path, original_name, folder_id=FOLDER_ID
-        )
-
         # Cek apakah pesan dari grup atau private
         uploader_username = getattr(msg.from_user, "username", None)
         chat_type = msg.chat.type  # "private", "group", "supergroup"
@@ -397,19 +342,10 @@ def handle_document(msg):
             "chat_type": chat_type,
             "chat_title": chat_title,
             "chat_id": msg.chat.id,
-            "drive_file_id": drive_file_id,
-            "drive_link": drive_link,
         }
         save_file_metadata(meta)
 
-        if drive_file_id:
-            bot.reply_to(
-                msg,
-                f"✅📄 Dokumen berhasil disimpan\n"
-                f"🌍 Link publik: {drive_link}"
-            )
-        else:
-            bot.reply_to(msg, "⚠️ Dokumen tersimpan lokal, tapi gagal upload ke Drive.")
+        bot.reply_to(msg, f"✅📄 Dokumen berhasil disimpan")
 
     except Exception as e:
         logger.exception("Error saat menerima dokumen")
@@ -451,3 +387,4 @@ def handle_photo(msg):
 if __name__ == "__main__":
     print("Bot running...")
     bot.infinity_polling(timeout=60, long_polling_timeout = 60)
+
