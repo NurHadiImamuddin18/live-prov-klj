@@ -318,7 +318,6 @@ def send_order_to_sheet(data):
 # ID folder tujuan di Google Drive
 FOLDER_ID = "1CtHNq2y05FxB-qSn-2NY0Doxn7I7wXm0"
 
-
    # ganti sesuai folder Drive kamu
 
 def upload_to_drive(file_path, file_name, folder_id=None):
@@ -336,7 +335,8 @@ def upload_to_drive(file_path, file_name, folder_id=None):
         body=file_metadata,
         media_body=media,
         fields="id, webViewLink",
-        supportsAllDrives=True  # <-- ini sudah benar
+        supportsAllDrives=True,
+        includeItemsFromAllDrives=True # <-- ini sudah benar
     ).execute()
 
     return uploaded_file["id"], uploaded_file["webViewLink"]
