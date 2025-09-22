@@ -325,21 +325,37 @@ def upload_to_drive(file_path, file_name, folder_id=None):
     creds = Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
     service = build("drive", "v3", credentials=creds)
 
-    file_metadata = {"name": file_name}
-    if folder_id:
-        file_metadata["parents"] = [folder_id]
+    print(f"DEBUG: Upload file '{file_name}' ke folder {folder_id}")
+
+    # Cek apakah folder ada dan bisa diakses
+    try:
+        folder = service.files().get(
+            fileId=folder_id,
+            fields="id, name",
+            supportsAllDrives=True
+        ).execute()
+        print(f"✅ Folder ditemukan: {folder['name']} (ID: {folder['id']})")
+    except Exception as e:
+        print("❌ ERROR: Folder tidak ditemukan atau tidak bisa diakses")
+        raise
+
+    file_metadata = {
+        "name": file_name,
+        "parents": [folder_id] if folder_id else []
+    }
 
     media = MediaFileUpload(file_path, resumable=True)
 
+    # HANYA supportsAllDrives yang digunakan
     uploaded_file = service.files().create(
         body=file_metadata,
         media_body=media,
         fields="id, webViewLink",
-        supportsAllDrives=True,
-        includeItemsFromAllDrives=True # <-- ini sudah benar
+        supportsAllDrives=True  # ✅ ini benar
     ).execute()
 
     return uploaded_file["id"], uploaded_file["webViewLink"]
+
 
 
 @bot.message_handler(content_types=["document"])
