@@ -13,6 +13,9 @@ from googleapiclient.http import MediaFileUpload
 
 # setup logging
 
+# Path ke file JSON credential (di Railway simpan di variable env)
+SERVICE_ACCOUNT_FILE = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "long-province-472605-s3-fe1f892972b3.json")
+
 def get_db_conn():
     return pymysql.connect(
         host=os.getenv("MYSQLHOST"),
@@ -308,28 +311,7 @@ def send_order_to_sheet(data):
     except Exception as e:
         logger.exception("Gagal mengirim order ke Google Sheets")
 
-        def upload_to_drive(local_path, filename, folder_id=None):
-            try:
-                service = build("drive", "v3", credentials=creds)
 
-                file_metadata = {"name": filename}
-                if folder_id:  # kalau mau taruh ke folder tertentu
-                    file_metadata["parents"] = [folder_id]
-
-                media = MediaFileUpload(local_path, resumable=True)
-                file = service.files().create(
-                    body=file_metadata,
-                    media_body=media,
-                    fields="id, webViewLink"
-                ).execute()
-
-                file_id = file.get("id")
-                file_link = file.get("webViewLink")
-                logger.info(f"File berhasil diupload ke Drive: {file_link}")
-                return file_id, file_link
-            except Exception as e:
-                logger.exception("Gagal upload ke Google Drive")
-                return None, None
 
 # ID folder tujuan di Google Drive
 FOLDER_ID = "1iOU8XkjxM-1jceBHBldey-jMGvPB-CoY"   # ganti sesuai folder Drive kamu
@@ -403,7 +385,7 @@ def handle_document(msg):
             bot.reply_to(
                 msg,
                 f"✅📄 Dokumen berhasil disimpan\n"
-                f"🌍 Link publik: https://drive.google.com/drive/folders/1iOU8XkjxM-1jceBHBldey-jMGvPB-CoY?usp=drive_link"
+                f"🌍 Link publik: {drive_link}"
             )
         else:
             bot.reply_to(msg, "⚠️ Dokumen tersimpan lokal, tapi gagal upload ke Drive.")
