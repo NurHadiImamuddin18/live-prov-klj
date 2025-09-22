@@ -13,8 +13,6 @@ from googleapiclient.http import MediaFileUpload
 
 # setup logging
 
-# Path ke file JSON credential (di Railway simpan di variable env)
-SERVICE_ACCOUNT_FILE = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "long-province-472605-s3-fe1f892972b3.json")
 creds_json = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 creds_dict = json.loads(creds_json)  # parse isi JSON
 
@@ -55,7 +53,7 @@ creds_dict = json.loads(creds_json)
 creds_dict["private_key"] = creds_dict["private_key"].replace("\\n", "\n")
 
 # Buat credentials
-SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
+SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
 creds = Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
 gc = gspread.authorize(creds)
 
@@ -327,12 +325,13 @@ def upload_to_drive(file_path, file_name, folder_id=None):
 
     print(f"DEBUG: Upload file '{file_name}' ke folder {folder_id}")
 
-    # Cek apakah folder ada dan bisa diakses
+    # ✅ cek folder dengan supportsAllDrives
     try:
         folder = service.files().get(
             fileId=folder_id,
             fields="id, name",
-            supportsAllDrives=True
+            supportsAllDrives=True,
+            includeItemsFromAllDrives=True
         ).execute()
         print(f"✅ Folder ditemukan: {folder['name']} (ID: {folder['id']})")
     except Exception as e:
@@ -346,15 +345,15 @@ def upload_to_drive(file_path, file_name, folder_id=None):
 
     media = MediaFileUpload(file_path, resumable=True)
 
-    # HANYA supportsAllDrives yang digunakan
     uploaded_file = service.files().create(
         body=file_metadata,
         media_body=media,
         fields="id, webViewLink",
-        supportsAllDrives=True  # ✅ ini benar
+        supportsAllDrives=True,
     ).execute()
 
     return uploaded_file["id"], uploaded_file["webViewLink"]
+
 
 
 
