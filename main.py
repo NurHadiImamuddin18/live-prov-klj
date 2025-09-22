@@ -15,6 +15,8 @@ from googleapiclient.http import MediaFileUpload
 
 # Path ke file JSON credential (di Railway simpan di variable env)
 SERVICE_ACCOUNT_FILE = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "long-province-472605-s3-fe1f892972b3.json")
+creds_json = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+creds_dict = json.loads(creds_json)  # parse isi JSON
 
 def get_db_conn():
     return pymysql.connect(
@@ -318,7 +320,7 @@ FOLDER_ID = "1iOU8XkjxM-1jceBHBldey-jMGvPB-CoY"   # ganti sesuai folder Drive ka
 
 def upload_to_drive(file_path, file_name, folder_id=None):
     """Upload file ke Google Drive, return (file_id, webViewLink)."""
-    creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    creds = Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
     service = build("drive", "v3", credentials=creds)
 
     file_metadata = {"name": file_name}
