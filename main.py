@@ -316,7 +316,7 @@ def send_order_to_sheet(data):
 
 
 # ID folder tujuan di Google Drive
-FOLDER_ID = "1iOU8XkjxM-1jceBHBldey-jMGvPB-CoY"
+FOLDER_ID = "1CtHNq2y05FxB-qSn-2NY0Doxn7I7wXm0"
 
    # ganti sesuai folder Drive kamu
 
